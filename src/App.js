@@ -6,47 +6,58 @@ function App(props) {
   const [map, setMap] = useState([]),
         table = useRef()
 
+  const store   = props.store,
+        actions = store.actions
 
 
-  function getCell(y, x){
+  const getCell = (y, x) => {
     return y * 3 - 3 + x
   }
 
-      useEffect(() => {
+
+  function colorMarkStart(x, y){
+          
+    const allCells = table.current.querySelectorAll('.Square')
+    
+    for(let cell of allCells){
+
+      if(cell.id == getCell(y, x)){
+        cell.style = 'background-color: green'
+      }
+    }
+
+  }
 
 
-        // let start = props.store.actions.start,
-        //    coords = props.store.getState(start()).start,
-        //    numCell = getCell(coords.y, coords.y)
 
-        // console.log(numCell)
+  useEffect(() => {
 
-        // const startCell = table.current.querySelector('#'+numCell)
+    let initCoords = actions.initCoords()
+        store.dispatch(initCoords)
 
-        // console.log(startCell)
+    let go = actions.toServer()
+        store.dispatch(go)
+    
+    const coords = store.getState().start,
+          {x, y} = coords
 
+    colorMarkStart(x, y)
 
+    store.subscribe(() => {
 
-        let go = props.store.actions.toServer()
-          props.store.dispatch(go)
-        
+        let curr = store.getState().currStep
 
-        props.store.subscribe(() => {
+          if(curr.payload === 'curr'){
 
-            let step = props.store.actions.toServer,
-                curr = props.store.getState(step()).currStep
+            setMap(prev => {
+              return [...prev, curr]
+            })
+            
+          }
+    
+    })
 
-              if(curr.payload === 'curr'){
-
-                setMap(prev => {
-                  return [...prev, curr]
-                })
-                
-              }
-        
-        })
-
-      }, []);
+  }, []);
 
 
   function answer(){
@@ -54,13 +65,12 @@ function App(props) {
 
     if(map.length === 10){
 
-      let answer = props.store.actions.answer()
-      props.store.dispatch(answer)
+      let answer = actions.answer()
+          store.dispatch(answer)
 
-      props.store.subscribe(() => {
+      store.subscribe(() => {
 
-        let ans = props.store.actions.answer,
-           best = props.store.getState(ans()).best,
+        let best = store.getState().best,
            cells = table.current.querySelectorAll('.Square')
           
             let allRect = map.length - 1,
@@ -84,8 +94,6 @@ function App(props) {
     }
 
   }
-
-
 
 
   return (

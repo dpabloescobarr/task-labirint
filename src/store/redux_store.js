@@ -1,4 +1,4 @@
-import {toServer, answer, start} from './redux/actions'
+import {toServer, answer, initCoords} from './redux/actions'
 import rootReducer from './redux/rootReducer'
 
 import {applyMiddleware, createStore} from 'redux'
@@ -16,7 +16,7 @@ let store = createStore(
 
 window.store = store
 
-store.actions = {toServer, answer, start}
+store.actions = {toServer, answer, initCoords}
 
 
 export default store

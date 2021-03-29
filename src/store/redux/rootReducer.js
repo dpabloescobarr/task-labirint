@@ -2,7 +2,7 @@ import { combineReducers } from "redux"
 import {FETCH, ANSWER, START} from "./types"
 
 
-function currStep(state = {i: 0, step: [], payload: false}, action){
+function currStep(state = {i: 0, step: []}, action){
     
     if(action.type === FETCH){
 
@@ -23,7 +23,7 @@ function currStep(state = {i: 0, step: [], payload: false}, action){
 }
 
 
-function best(state = {coords: {}, payload: false}, action){
+function best(state = {coords: {}}, action){
 
     if(action.type === ANSWER){
         

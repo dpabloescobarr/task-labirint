@@ -1,18 +1,43 @@
 import {FETCH, ANSWER, START} from './types'
 
+const randomInt = (border) => {
+    return Math.round(Math.random() * border)
+};
+
+const RECT = 3,
+ ALL_STEPS = 10
+
+export function initCoords(){
+
+    return dispatch => {
+        
+
+        let inputX = randomInt(RECT),
+            inputY = randomInt(RECT)
+
+
+        if(!inputX || !inputY){
+
+            initCoords()
+
+        }else{
+
+            dispatch({
+                type: START,
+                x: inputX,
+                y: inputY
+            })
+        }
+
+    }
+}
+
+
 export function toServer(){
 
     return (dispatch, getState) => {
 
-
-        const RECT = 3,
-         ALL_STEPS = 10
-
         let MAP = []
-
-        const randomInt = (border) => {
-            return Math.ceil(Math.random() * border)
-        };
 
         const validSteps = (elem) => {
 
@@ -27,23 +52,10 @@ export function toServer(){
         //стартовый квадрат
         (function init(){
 
-            let inputX = randomInt(RECT),
-                inputY = randomInt(RECT),
-                countStep = 1
+            const {x, y}  = getState().start
+            let countStep = 1
 
-            if(!inputX || !inputY){
-
-                init()
-
-            }else{ 
-
-                const x = randomInt(3),
-                      y = randomInt(3)
-
-                genOneStep({ x: x, y: y}, countStep)
-
-                dispatch(start(x, y))
-            }
+            genOneStep({ x: x, y: y}, countStep)
 
         })();
 
@@ -98,8 +110,12 @@ export function toServer(){
         setInterval(() => {
 
             currStep = getState(toServer).currStep.i
+
             if(stepsCount > currStep){
-                dispatch(response(MAP))
+                dispatch({
+                    type: FETCH,
+                    map: MAP
+                })
             }
             
         }, 1000)
@@ -108,11 +124,6 @@ export function toServer(){
     }
     
 }
-
-const response = (map) => ({
-    type: FETCH,
-    map: map
-});
 
 
 
@@ -125,18 +136,6 @@ export function answer(){
                 y: step.y
             }
 
-        dispatch(getAnswer(coords)) 
+        dispatch({type: ANSWER, coords: coords })
     }
 }
-
-const getAnswer = (coords) => ({
-    type: ANSWER,
-    coords: coords
-})
-
-export const start = (x, y) => ({
-
-    type: START,
-    x: x,
-    y: y
-})
